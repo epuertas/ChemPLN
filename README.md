@@ -1,11 +1,6 @@
 ![Versión Python](https://img.shields.io/badge/python-2.7-blue.svg)
 ![Licencia](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
 
-<style>
-body {
-text-align: justify}
-</style>
-
 <p align="center"><img src="logo.png" /></p>
 
 ### Sistema de Extracción Automática y Visualización 3D de Moléculas en Textos Biomédicos
@@ -16,8 +11,25 @@ Sistema de **análisis de texto de documentos biomédicos**, que extrae referenc
 La aplicación está pensada para ayudar a estudiantes de titulaciones de ciencias de la salud (Medicina, Farmacia, Biotecnología, etc.). Se utilizan técnicas de Procesamiento del Lenguaje Natural para extraer las entidades químicas nombradas y, mediante consultas a fuentes de Datos Enlazados Abiertos (Linked Open Data) se **recupera información semántica multilingüe** sobre dichas entidades, además de información de la fórmula y la estructura molecular del compuesto. Esa estructura se dibuja y **se muestra a los usuarios en un modelo 3D** que permite rotar y hacer zoom en las moléculas para poder estudiarlas mejor. Además, la librería que hemos desarrollado permite realizar búsquedas en sciELO de artículos científicos que hablen sobre las moléculas detectadas (también de forma multilingüe), visualizar los artículos, o cargarlos en la aplicación para buscar nuevas moléculas y compuestos.
 
 ## Instalación
+El sistema necesita las siguientes librerías externas para funcionar: 
 
+* Bottle - Python Web Framework: https://bottlepy.org
+* ChemDataExtractor: http://chemdataextractor.org
+* SPARQLWrapper - SPARQL Endpoint interface to Python: https://rdflib.github.io/sparqlwrapper/
+* Requests: http://python-requests.org
+* Untangle: http://untangle.readthedocs.io
 
+Instalación de librerías y requisitos:
+```bash
+pip install bottle
+pip install sparqlwrapper
+pip install requests
+pip install untangle
+pip install ChemDataExtractor
+cde data download
+ ```
+Si tienes instalado Anaconda también se puede utilizar la herramienta **conda** para instalar las dependencias. Puedes consultar como hacerlo en la web de cada librería.
+ 
 
 ## Uso de la herramienta
 
