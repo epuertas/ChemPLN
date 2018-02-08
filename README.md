@@ -29,8 +29,26 @@ pip install ChemDataExtractor
 cde data download
  ```
 Si tienes instalado Anaconda también se puede utilizar la herramienta **conda** para instalar las dependencias. Puedes consultar como hacerlo en la web de cada librería.
- 
 
-## Uso de la herramienta
+## Ejecución y uso de la herramienta
+Para utilizar la aplicación, lo primero que hay que hacer es laznar el servicio de procesamiento de información: Abrimos un terminal en el directorio del proyecto y escribimos la siguiente línea:
+```bash
+python chemInfo3D.py
+```
+La interfaz desl sistema es una aplicación web a la que podemos acceder abriendo en un navegador web la dirección "localhost:8080". 
+Lo primero que veremos es un editor de texto en el que podemos introducir el texto biomédico que queremos analizar. La interfaz carga por defecto un ejemplo con un texto de un fragmento de uncaso clínico.
 
-## Cómo funciona
+Una vez introducido el documento, pulsando en el botón **"Procesar Texto"**, se analiza, y cuando termina el análisis se nos muestra un panel con un listado de los compuestos químicos encontrados, y cuando se pincha en cada uno se muestra la siguiente información:
+
+* Nombre del compuesto.
+* Formulación químicas.
+* Descripción del compuesto (multilingüe).
+* Representación 3d interactiva.
+* Imagen en 2D.
+* Listado de artículos disponibles en **SciELO** relacionados con el compuesto seleccionado (multilingüe).
+
+En la parte superior del panel de información tenemos un selector de idioma que nos permite elegir, para aquellos elementos multilingües, en qué idioma queremos rtecuperar y ver la información. Aunque el prototipo sólo muestra opciones para inglés y español, el código soporta todos los idiomas disponibles en ScieLO para los artículos (español, inglés, portugués,etc.), y todos los idiomas de la wikipedia para la información general.
+
+
+
+
