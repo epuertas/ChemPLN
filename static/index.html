@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+        <title>
+		  II HACKATHON TECNOLOG&Iacute;AS DEL LENGUAJE
+        </title>
+		<link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" />		
+		<link href="https://fonts.googleapis.com/css?family=Dancing+Script" rel="stylesheet">
+
+        <script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+		<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+		
+		<script src="static/js/Three49custom.js"></script>
+		<script type="text/javascript" src="static/js/GLmol.js"></script>
+
+        <script>
+			try{
+            	$(function () {
+
+					$("#spinner2").hide();
+					$("#spinner3").hide();
+					
+					$("#contentOutput").hide();
+					$("#abstractDiv").hide();
+					$("#content3D").hide();
+					
+					tinymce.init({
+						selector: "textarea",
+						width: "100%"						
+					});
+
+            		$("#btnProcesarTexto").click(function () {
+						procesarTexto();
+            		});	
+										
+            		$("#btnClearTexto").click(function () {
+						cargarTexto('');
+            		});
+            	});
+
+            } catch (error) {
+            	console.error("Error en el codigo: " + error);
+            }
+
+            function cargarTexto(unTexto){
+				$("#contentOutput").hide();
+				$("#contentOutput").width("5%");
+
+				$('#content').animate({width: "90%"},1000);
+				$('#contentTextArea').show();
+				
+				var inst = tinyMCE.EditorManager.get('miTexto');
+				inst.focus();
+				
+				tinymce.activeEditor.getBody().setAttribute('contenteditable', true);
+				tinymce.activeEditor.setContent(unTexto);			
+			}
+			
+			function cargarArticulo(ref){
+				textoArticulo = $("#"+ref).html();
+				cargarTexto(textoArticulo);
+			}
+			
+			function procesarTexto() {				
+				//Inicializamos las areas donde se ven los datos de salida
+				$('#output').html('');
+				clearOutputInfo();
+				$("#spinner2").show();
+		
+				var txtClinico = tinymce.get('miTexto').getContent({format : 'text'});
+				tinymce.activeEditor.getBody().setAttribute('contenteditable', false);
+				//$("#output").html(txtClinico);
+				
+				$.ajax({
+					type: "POST",
+					url: "/documento",
+					data:{"text":txtClinico},
+					success: exito, 
+					error: fallo
+				});
+			}
+				
+            function exito(data) {					
+				$.each($.parseJSON(JSON.stringify(data)), function(idx, obj) {
+					if(obj.names[0] != 'undefined'){
+						var s = obj.names[0];
+						if (s.length > 2) {
+							unSpan = $('<span>',{style:"display: inline-block; margin:3px;"});
+							unTopico=$('<button/>', {
+								text: s,
+								type: 'button',
+								class: 'btn btn-outline-info',
+								id: 'btn_sin_'+s.toLowerCase(),
+								click: function () {
+									clearOutputInfo();
+									nombreFormula(s);
+									getAbstract(s); 
+									getMolecule(s);
+									getImage2D(s);
+									getSciELOPapers(s);
+
+									$("#abstractDiv").show();
+									$("#content3D").show();
+								}
+							}).appendTo(unSpan);
+							$("#output").append(unSpan);
+						}						
+					}
+				});
+				
+				$('#content').animate({
+					width: "20%",
+				  }, 500, function() {
+					// Animation complete.
+					$('#contentTextArea').hide();
+					$('#contentOutput').show();
+					$('#contentOutput').animate({width:"75%"},500);
+					$("#spinner2").hide();
+
+				  }
+				);				
+            }
+            
+			function fallo(data) {console.log(data);}
+				
+			function getAbstract(termino){
+				//alert(termino);
+				$("#spinner3").show();
+				
+				
+				$('#abstract').html('');
+				$('#th').html('');
+							
+				//Normalizamos el término, sustituyendo espacios por subrayado y poniendo la primera letra en mayúsculas
+				var DBPediaTermino = (termino.charAt(0).toUpperCase() + termino.slice(1)).replace(/\s/g,"_");
+				//console.log (DBPediaTermino);
+				
+				$.ajax({
+					type: "GET",
+					url: "/abstract/"+DBPediaTermino+"/"+$('input[name="lngSelect"]:checked').val(),
+					//url: "/drugbank/"+termino,
+					success: function(data){
+						$("#abstractDiv").html(data);
+						$("#spinner3").hide();
+					},
+					error: fallo
+				});
+			}
+			
+			function getMolecule(m){				
+				//$.get( "/drugbank/id/"+m, function( id ) {
+					$.get("/opsin/"+m+"/sdf", function(ret) {
+					//$.get("/drugbank/pdb/"+id, function(ret) {
+						$("#glmol01_src").val(ret);
+						glmol01.loadMolecule();
+					});
+				//});				
+			}
+			
+			function getImage2D(m){
+				$("#content2D").html('<img src="https://cactus.nci.nih.gov/chemical/structure/'+m+'/image">');
+			}
+			
+			function nombreFormula (m) {
+				$.get("/opsin/"+m+"/formula", function(ret) {
+					$("#nombreCompuesto").html("<h3>"+m+" ("+ret+")</h3>");
+				});				
+			}
+
+			function getSciELOPapers (m) {
+				$.get("/scielo/"+m+"/"+$('input[name="lngSelect"]:checked').val(), function(ret) {
+					$("#listadoPapers").html(ret);
+				});				
+			}
+
+
+			function clearOutputInfo(){				
+				$("#content3D").hide();
+				$('#abstractDiv').html('');	
+				$('#nombreCompuesto').html('');	
+				$('#content2D').html;
+				$('#listadoPapers').html('');				
+			}
+
+		</script>
+	<style>
+	body
+	{
+		background-image:url("/static/img/fondo.png");
+		background-repeat:repeat-y;
+	} 
+	</style>
+    </head>
+    <body>
+
+		
+		<div id="header" style=" 
+		width:98%; 
+		text-align:left;
+		padding: 10px;
+		font-family:'Dancing Script', sans-serif;
+		font-size: 48px;">
+		
+			<p style="text-decoration:none;color:#000">
+
+			II Hackathon Tecnolog&iacute;as del Lenguaje 
+
+			</p>
+		</div>		
+	
+		<!-- Content -->
+		<div id="outer" class="panel" style=" margin:0 auto 0 auto; width:90%;filter:alpha(opacity=90); opacity:0.90;" >
+		
+			<div id="content" style="padding:0.5%; float:left;width:90%" >
+				
+				<div class="card border-dark mb-3">
+				  <div class="card-header">
+					<span id="spinner2"><i class="fas fa-cog fa-spin"></i></span>
+					Texto
+					<button type="button" class="btn float-right" id="btnClearTexto" ><i class="fas fa-plus-circle"></i> Nuevo</button>
+				  </div>		  
+				  <div class="card-body text-primary" id="contentTextArea">
+				  
+					<textarea name="texto" id="miTexto" rows="13">					
+					<p><span style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px;">A 57-year-old Caucasian female (CF) was admitted to the hospital with atrial flutter with rapid ventricular response (AFl-RVR). She was treated with diltiazem (Cardizem) IV, Cardizem drip and digoxin and converted to normal sinus rhythm (NSR).</span><br style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px;"><br style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px;"><span style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px; font-weight: bold;">Past medical history (PMH</span><span style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px;">)</span><br style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px;"><br style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px;"><span style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px;">Hypertension (HTN), paroxysmal atrial fluttter (one episode 2 years ago), mild coronary artery diseases (CAD) (30% stenosis of LAD, RCA) diagnosed during left heart catheterization (LHC) 2 years ago, hyperlipidemia (HLP).</span><br style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px;"><br style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px;"><span style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px; font-weight: bold;">Medications</span><br style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px;"><br style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px;"><span style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px;">Lisinopril, ASA (aspirin), Lipitor (atorvastatin).</span><br style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px;"><br style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px;"><span style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px; font-weight: bold;">Allergies</span><br style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px;"><br style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px;"><span style="font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif; font-size: 13px; line-height: 18.2000007629395px;">None. She reports profound weakness and joint pain with beta-blockers.</span><br data-mce-bogus="1"></p>
+					</textarea>
+					<br Clear="All" />
+					<div>
+						<button type="button" class="btn btn-secondary" id="btnProcesarTexto"><i class="fas fa-play-circle"></i> Procesar Texto</button>
+					</div>
+				  </div>
+				</div>
+		
+			</div>
+			
+			<div id="contentOutput" style="padding: 0.5%; float:right;width:5%;display:none">			
+				<div class="card border-dark mb-3">
+				
+					<div class="card-header" >
+						<span id="spinner3" class="float-right"><i class="fas fa-spinner fa-spin"></i></span>
+						<div class="btn-group btn-group-toggle" data-toggle="buttons">
+						<label class="btn btn-sm btn-outline-secondary active">
+						<input type="radio" name="lngSelect" id="optEN" value="en" checked> English
+						</label>
+						<label class="btn btn-sm btn-outline-secondary">
+						<input type="radio" name="lngSelect" id="optES" value="es"> Espa&ntilde;ol
+						</label>  
+						</div>					
+					</div>
+					
+					<div class="card-body">
+
+						<div class="row" style="margin-bottom:15px;">
+							<div class="col" id="output" >							
+							</div>
+						</div>
+
+						<ul class="nav nav-tabs" id="infoTab" role="tablist">
+							<li class="nav-item">
+								<a class="nav-link active" id="abstractTab" data-toggle="tab" href="#abstractPanel" role="tab">Descripci&oacute;n</a>
+							</li>	
+
+							<li class="nav-item">
+								<a class="nav-link" id="3DTab" data-toggle="tab" href="#3DPanel" role="tab">Vista 3D</a>
+							</li>
+
+							<li class="nav-item">
+								<a class="nav-link" id="2DTab" data-toggle="tab" href="#2DPanel" role="tab">Vista 2D</a>
+							</li>								
+
+							<li class="nav-item">
+								<a class="nav-link" id="scieloTab" data-toggle="tab" href="#scieloPanel" role="tab">SciELO</a>
+							</li>						
+						</ul>
+						
+						<div id ="nombreCompuesto" style="margin:10px;"></div>
+						
+						<div class = "tab-content">
+						
+							<div class="tab-pane show active" id="abstractPanel" role="tabpanel">
+								<div>
+									<div id="abstractDiv"  style="padding:4px;text-align:left;"></div>
+								</div>
+							</div>
+							
+							<div class="tab-pane" id="3DPanel" role="tabpanel">
+								<div id="content3D"  style="margin:2px;">					
+									<div id="glmol01" class="card border-info card-info mb-3 text-center" style="width: 500px; height: 400px; background-color: white;"></div>
+									<textarea id="glmol01_src" style="display: none;"></textarea>
+								</div>
+							</div>
+							
+							<div class="tab-pane" id="2DPanel" role="tabpanel">
+								<div id="content2D" style="margin:2px;">
+								</div>
+							</div>
+							
+							<div class="tab-pane" id="scieloPanel" style="padding:4px;text-align:left;" role="tabpanel">
+								<div id="listadoPapers"></div>
+							</div>						
+						</div>
+					</div>
+				</div>
+			</div>			
+		</div>		
+		
+		
+		<script>
+			var glmol01 = new GLmol('glmol01', true);
+			glmol01.defineRepresentation = function() {
+			var all = this.getAllAtoms();
+			var hetatm = this.removeSolvents(this.getHetatms(all));
+			this.colorByAtom(all, {});
+			this.colorByChain(all);
+			var asu = new THREE.Object3D();
+
+			this.drawBondsAsStick(asu, hetatm, this.cylinderRadius / 2.0, this.cylinderRadius, true, true, 0.3);
+	
+			this.drawCartoon(asu, all, this.curveWidth, this.thickness);
+
+			this.drawSymmetryMates2(this.modelGroup, asu, this.protein.biomtMatrices);
+			this.modelGroup.add(asu);
+			};
+		</script>	
+    </body>
+</html>
