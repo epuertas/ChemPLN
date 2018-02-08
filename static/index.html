@@ -76,6 +76,7 @@
 				tinymce.activeEditor.getBody().setAttribute('contenteditable', false);
 				//$("#output").html(txtClinico);
 				
+				// Envia el texto para extraer las entidades quimicas nombradas
 				$.ajax({
 					type: "POST",
 					url: "/documento",
@@ -85,7 +86,9 @@
 				});
 			}
 				
-            function exito(data) {					
+            // Dibuja el listado de entidades como botones y asocia al evento click de cada 
+			// boton la llamada a las funciones que recuperan la información de los compuestos
+			function exito(data) {					
 				$.each($.parseJSON(JSON.stringify(data)), function(idx, obj) {
 					if(obj.names[0] != 'undefined'){
 						var s = obj.names[0];
@@ -128,6 +131,7 @@
             
 			function fallo(data) {console.log(data);}
 				
+			//Recupera una descripción del compuesto de la web semántica (DBPedia) 
 			function getAbstract(termino){
 				//alert(termino);
 				$("#spinner3").show();
@@ -152,6 +156,7 @@
 				});
 			}
 			
+			// Recupera una representación textual de la molécula en formato SDF
 			function getMolecule(m){				
 				//$.get( "/drugbank/id/"+m, function( id ) {
 					$.get("/opsin/"+m+"/sdf", function(ret) {
@@ -162,23 +167,26 @@
 				//});				
 			}
 			
+			// Recuperamos una imagen de la molecula
 			function getImage2D(m){
 				$("#content2D").html('<img src="https://cactus.nci.nih.gov/chemical/structure/'+m+'/image">');
 			}
 			
+			//Recupera la formula de la molecula
 			function nombreFormula (m) {
 				$.get("/opsin/"+m+"/formula", function(ret) {
 					$("#nombreCompuesto").html("<h3>"+m+" ("+ret+")</h3>");
 				});				
 			}
 
+			// Recupera de SciELO un listado de articulos cientificos relacionados con la molecula
 			function getSciELOPapers (m) {
 				$.get("/scielo/"+m+"/"+$('input[name="lngSelect"]:checked').val(), function(ret) {
 					$("#listadoPapers").html(ret);
 				});				
 			}
 
-
+			// Inicializa los paneles de informacion
 			function clearOutputInfo(){				
 				$("#content3D").hide();
 				$('#abstractDiv').html('');	
@@ -311,6 +319,7 @@
 		
 		
 		<script>
+			// Codigo que renderiza la molecula en 3D
 			var glmol01 = new GLmol('glmol01', true);
 			glmol01.defineRepresentation = function() {
 			var all = this.getAllAtoms();
