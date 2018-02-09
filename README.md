@@ -49,6 +49,9 @@ $ python chemInfo3D.py
 ```
 
 La interfaz del sistema es una aplicación web a la que podemos acceder abriendo en un navegador web la dirección **"localhost:8080"**. 
+
+![pantalla inicial de la aplicación](doc/ChemInfo3d_01.png)
+
 Lo primero que veremos es un editor de texto en el que podemos introducir el texto biomédico que queremos analizar. La interfaz carga por defecto un ejemplo con un texto de un fragmento de un caso clínico.
 
 Una vez introducido el documento, pulsando en el botón **"Procesar Texto"**, se analiza, y cuando termina el análisis se nos muestra un panel con un listado de los compuestos químicos encontrados. Al pinchar en un compuesto, se muestra la siguiente información:
@@ -59,6 +62,12 @@ Una vez introducido el documento, pulsando en el botón **"Procesar Texto"**, se
 * Visualizazción 3D interactiva.
 * Imagen en 2D.
 * Listado de artículos disponibles en **SciELO** relacionados con el compuesto seleccionado (multilingüe).
+
+![Visualización de moléculas en 3D](doc/ChemInfo3d_02.png)
+
+![Listado de artículos científicos de SciELO](doc/ChemInfo3d_03.png)
+
+
 
 En la parte superior del panel de información tenemos un selector de idioma que nos permite elegir, para aquellos elementos multilingües, en qué idioma queremos recuperar y ver la información. Aunque el prototipo sólo muestra opciones para inglés y español, el sistema tiene implementado soporte para todos los idiomas disponibles en ScieLO para los artículos (español, inglés, portugués, etc.), y todos los idiomas de la Wikipedia para la información general.
 
