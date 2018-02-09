@@ -45,7 +45,7 @@ $ cde data download
 ## Ejecución y uso de la herramienta
 Para utilizar la aplicación, lo primero que hay que hacer es lanzar el servicio de procesamiento de información: Abrimos un terminal en el directorio del proyecto y escribimos la siguiente línea:
 ```bash
-python chemInfo3D.py
+$ python chemInfo3D.py
 ```
 
 La interfaz del sistema es una aplicación web a la que podemos acceder abriendo en un navegador web la dirección **"localhost:8080"**. 
