@@ -19,22 +19,35 @@ El sistema necesita las siguientes librerías externas para funcionar:
 * Requests: http://python-requests.org
 * Untangle: http://untangle.readthedocs.io
 
-Instalación de librerías y requisitos:
+
+### 1. Descargar el código 
+
 ```bash
-pip install bottle
-pip install sparqlwrapper
-pip install requests
-pip install untangle
-pip install ChemDataExtractor
-cde data download
- ```
-Si tienes instalado **Anaconda** también se puede utilizar la herramienta **conda** para instalar las dependencias. Puedes consultar como hacerlo en la web de cada librería.
+$ git clone https://github.com/epuertas/ChemPLN.git
+$ cd ChemPLN
+```
+
+### 2. Instalar las dependencias
+
+```bash
+$ mkvirtualenv ChemPLN
+$ pip install -r requirements.txt
+```
+  
+Si tienes instalado **Anaconda** también se puede utilizar esta herramienta para instalar las dependencias. Puedes consultar como hacerlo en la web de cada módulo.
+
+### 3. Descarga de modelos de ChemDataExtractor
+
+```bash
+$ cde data download
+```
 
 ## Ejecución y uso de la herramienta
-Para utilizar la aplicación, lo primero que hay que hacer es laznar el servicio de procesamiento de información: Abrimos un terminal en el directorio del proyecto y escribimos la siguiente línea:
+Para utilizar la aplicación, lo primero que hay que hacer es lanzar el servicio de procesamiento de información: Abrimos un terminal en el directorio del proyecto y escribimos la siguiente línea:
 ```bash
 python chemInfo3D.py
 ```
+
 La interfaz del sistema es una aplicación web a la que podemos acceder abriendo en un navegador web la dirección **"localhost:8080"**. 
 Lo primero que veremos es un editor de texto en el que podemos introducir el texto biomédico que queremos analizar. La interfaz carga por defecto un ejemplo con un texto de un fragmento de un caso clínico.
 

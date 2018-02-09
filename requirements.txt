@@ -1,0 +1,5 @@
+bottle==0.12.9
+SPARQLWrapper==1.7.6
+requests==2.18.4
+untangle==1.1.1
+ChemDataExtractor==1.3.0
