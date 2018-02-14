@@ -2,6 +2,8 @@
 from bottle import route, run, template, request, response, get, post, static_file
 from chemdataextractor import Document
 from SPARQLWrapper import SPARQLWrapper, JSON
+from googletrans import Translator
+
 import requests
 import json
 import re
@@ -10,6 +12,9 @@ import untangle
 # Endpoint DBPedia para consultas web semántica
 sparql = SPARQLWrapper("http://dbpedia.org/sparql")
 
+#Inicializamos el servicio de traducción automática
+translator = Translator(service_urls=['translate.google.com','translate.google.es','translate.google.co.kr','translate.google.co.jp','translate.google.ru'])
+
 #
 # Parser de texto que extrae las entidades químicas nombradas.
 # Utiliza la libreria ChemDataExtractor.
@@ -17,6 +22,11 @@ sparql = SPARQLWrapper("http://dbpedia.org/sparql")
 @post('/documento')
 def extraerChemContent():
     documento = request.forms.get("text")
+    # Los modelos del extractor de entidades están entrenados con documentos en inglés
+    # Si el documento está en otro idioma lo traducimos al inglés antes de procesarlo
+    translation = translator.translate(documento, dest='en')
+    if translation.src != 'en':
+        documento = translation.text
     doc = Document(documento)
     response.content_type = 'application/json'
     return json.dumps(doc.records.serialize())

@@ -2,8 +2,10 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-
+		<meta http-equiv="Cache-control" content="no-cache, no-store, must-revalidate">
+		<meta http-equiv="Expires" content="0" />
+		<meta http-equiv="Pragma" content="no-cache">
+		
         <title>
 		  II HACKATHON TECNOLOG&Iacute;AS DEL LENGUAJE
         </title>
@@ -41,7 +43,8 @@
             		$("#btnClearTexto").click(function () {
 						cargarTexto('');
             		});
-            	});
+
+				});
 
             } catch (error) {
             	console.error("Error en el codigo: " + error);
@@ -229,7 +232,7 @@
 				<div class="card border-dark mb-3">
 				  <div class="card-header">
 					<span id="spinner2"><i class="fas fa-cog fa-spin"></i></span>
-					Texto
+					Texto a analizar
 					<button type="button" class="btn float-right" id="btnClearTexto" ><i class="fas fa-plus-circle"></i> Nuevo</button>
 				  </div>		  
 				  <div class="card-body text-primary" id="contentTextArea">
