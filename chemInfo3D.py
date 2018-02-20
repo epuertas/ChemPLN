@@ -24,9 +24,13 @@ def extraerChemContent():
     documento = request.forms.get("text")
     # Los modelos del extractor de entidades están entrenados con documentos en inglés
     # Si el documento está en otro idioma lo traducimos al inglés antes de procesarlo
-    translation = translator.translate(documento, dest='en')
-    if translation.src != 'en':
-        documento = translation.text
+    try:
+        translation = translator.translate(documento, dest='en')
+        if translation.src != 'en':
+            documento = translation.text
+    except:
+        print("Se produjo un error al traducir el documento")
+		
     doc = Document(documento)
     response.content_type = 'application/json'
     return json.dumps(doc.records.serialize())
@@ -174,8 +178,13 @@ def opsin(termino,formato):
 def scieloInfo(unTermino, lng):
     urlXML = 'https://search.scielo.org/?lang=%s&output=xml&sort=RELEVANCE&filter[la][]=%s&q=%s' % (lng,lng,unTermino)
 
+    
     o = untangle.parse(urlXML)
-    resultados = o.response.result.doc
+
+    numFound = o.response.result["numFound"]
+    resultados = []
+    if int(numFound) > 0:
+        resultados = o.response.result.doc
     response = ''
     listaAutores = ''
     abstract = ''

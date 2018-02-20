@@ -15,10 +15,10 @@ El sistema necesita las siguientes librerías externas para funcionar:
 
 * Bottle - Python Web Framework: https://bottlepy.org
 * ChemDataExtractor: http://chemdataextractor.org
+* Googletrans: http://py-googletrans.readthedocs.io
 * SPARQLWrapper - SPARQL Endpoint interface to Python: https://rdflib.github.io/sparqlwrapper/
 * Requests: http://python-requests.org
 * Untangle: http://untangle.readthedocs.io
-
 
 ### 1. Descargar el código 
 
@@ -66,7 +66,6 @@ Una vez introducido el documento, pulsando en el botón **"Procesar Texto"**, se
 ![Visualización de moléculas en 3D](doc/ChemInfo3D_02.png)
 
 ![Listado de artículos científicos de SciELO](doc/ChemInfo3D_03.png)
-
 
 
 En la parte superior del panel de información tenemos un selector de idioma que nos permite elegir, para aquellos elementos multilingües, en qué idioma queremos recuperar y ver la información. Aunque el prototipo sólo muestra opciones para inglés y español, el sistema tiene implementado soporte para todos los idiomas disponibles en ScieLO para los artículos (español, inglés, portugués, etc.), y todos los idiomas de la Wikipedia para la información general.
