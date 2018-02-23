@@ -144,12 +144,12 @@
 				$('#th').html('');
 							
 				//Normalizamos el término, sustituyendo espacios por subrayado y poniendo la primera letra en mayúsculas
-				var DBPediaTermino = (termino.charAt(0).toUpperCase() + termino.slice(1)).replace(/\s/g,"_");
+				// var DBPediaTermino = (termino.charAt(0).toUpperCase() + termino.slice(1)).replace(/\s/g,"_");
 				//console.log (DBPediaTermino);
 				
 				$.ajax({
 					type: "GET",
-					url: "/abstract/"+DBPediaTermino+"/"+$('input[name="lngSelect"]:checked').val(),
+					url: "/wikipedia/"+termino+"/"+$('input[name="lngSelect"]:checked').val(),
 					//url: "/drugbank/"+termino,
 					success: function(data){
 						$("#abstractDiv").html(data);
@@ -261,6 +261,9 @@
 						<label class="btn btn-sm btn-outline-secondary">
 						<input type="radio" name="lngSelect" id="optES" value="es"> Espa&ntilde;ol
 						</label>  
+						<label class="btn btn-sm btn-outline-secondary">
+						<input type="radio" name="lngSelect" id="optCA" value="ca" > Catal&agrave;
+						</label>
 						</div>					
 					</div>
 					

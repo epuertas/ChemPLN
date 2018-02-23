@@ -67,6 +67,27 @@ def dbpediaAbstract(unTermino, language):
             htmlResult = "No description available for this compound."
 	
     return htmlResult
+
+@route('/wikipedia/<unTermino>/<language>')
+def wikipediaAbstract(unTermino, language):
+#https://en.wikipedia.org/w/api.php?action=query&titles=Warfarin&prop=langlinks&lllang=ca
+
+# Si el idioma es distinto de Inglés, obtenemos la traducción del término
+    if language != "en":
+        r = requests.get('https://en.wikipedia.org/w/api.php?action=query&format=json&titles=%s&prop=langlinks&lllang=%s' % (unTermino, language))	
+        results = json.loads(r.text)    
+    
+        if results["query"]["pages"].keys()[0]:
+           unTermino = results["query"]["pages"][results["query"]["pages"].keys()[0]]["langlinks"][0]["*"]
+
+    r2 = requests.get('https://%s.wikipedia.org/w/api.php?format=json&utf8=1&redirects=1&action=query&titles=%s&prop=revisions&rvprop=content&prop=extracts' % (language, unTermino)) 
+    results = json.loads(r2.text)
+	
+    if results["query"]["pages"].keys()[0]:
+        abstractTraducido = results["query"]["pages"][results["query"]["pages"].keys()[0]]["extract"]
+	
+	
+    return abstractTraducido
 	
 #
 # Devuelve el identificador pubchem de un compuesto
@@ -77,6 +98,16 @@ def pubchemID(unTermino):
     r = requests.get('https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/'+unTermino+'/json')	
     results = json.loads(r.text)    
     return str(results["PC_Compounds"][0]["id"]["id"]["cid"])
+
+#
+# Devuelve el identificador pubchem de un compuesto
+#
+@route('/pubchem/json/<unTermino>')
+def pubchemJSON(unTermino):
+
+    r = requests.get('https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/'+unTermino+'/json')	
+    results = json.loads(r.text)    
+    return results
 	
 #
 # Devuelve una imagen en formato png de un compuesto (obtenida de pubchem)
@@ -176,9 +207,12 @@ def opsin(termino,formato):
 #	
 @route('/scielo/<unTermino>/<lng>')
 def scieloInfo(unTermino, lng):
+    #Si el idioma no es alguno de los soportados en SciELO, dedvolvemos ingles por defecto
+    if ((lng !='en') & (lng !='es') & (lng!='pt')):
+        lng = 'en'
+	
     urlXML = 'https://search.scielo.org/?lang=%s&output=xml&sort=RELEVANCE&filter[la][]=%s&q=%s' % (lng,lng,unTermino)
 
-    
     o = untangle.parse(urlXML)
 
     numFound = o.response.result["numFound"]
